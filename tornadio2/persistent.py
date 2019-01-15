@@ -105,6 +105,14 @@ class TornadioWebSocketHandler(WebSocketHandler):
             # Flush messages, if any
             self.session.flush()
 
+    def check_origin(self, origin):
+        result = super().check_origin(origin)
+        # Tornado always block cross-site requests. However tornadio2 was built back when the default was
+        # to allow them. As a quick fix we allow all origins here. WARNING: THIS IS BAD AND SHOULD BE STOPPED
+        if not result:
+            warnings.warn('Cross Origin "{}" allowed. This is dangerous and will be deprecated.'.format(origin))
+        return True
+
     def _connection_check(self):
         if not self._is_active:
             self._detach()
