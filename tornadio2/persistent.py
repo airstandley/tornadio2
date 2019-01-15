@@ -23,6 +23,7 @@
 import logging
 import time
 import traceback
+import warnings
 
 import tornado
 from tornado.web import HTTPError
@@ -81,11 +82,11 @@ class TornadioWebSocketHandler(WebSocketHandler):
                 ))
                 self.stream.close()
                 return
-
             super(TornadioWebSocketHandler, self)._execute(transforms, *args, **kwargs)
 
     def open(self, session_id):
         """WebSocket open handler"""
+        session_id = session_id.encode(encoding='utf-8')
         self.session = self.server.get_session(session_id)
         if self.session is None:
             raise HTTPError(401, "Invalid Session")
